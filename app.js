@@ -8,10 +8,16 @@ app.engine(
 );
 app.set('view engine', 'handlebars');
 
-app.get('/', (req, res) => {
-  res.render('home', { msg: 'Handlebars are Cool!' });
-});
-
 app.listen(3000, () => {
   console.log('App listening on port 3000!');
 });
+
+// INDEX
+app.get('/', (req, res) => {
+  res.render('reviews-index', { reviews: reviews });
+});
+
+let reviews = [
+  { title: 'Bats are cute.', movieTitle: 'Batman II' },
+  { title: 'Ice is overrated.', movieTitle: 'Titanic' },
+];
