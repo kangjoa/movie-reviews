@@ -1,4 +1,5 @@
 const express = require('express');
+const methodOverride = require('method-override');
 const app = express();
 const { engine } = require('express-handlebars');
 const Handlebars = require('handlebars');
@@ -19,6 +20,9 @@ const Review = mongoose.model('Review', {
 });
 
 const bodyParser = require('body-parser');
+
+// override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -50,7 +54,7 @@ app.get('/', (req, res) => {
 
 // NEW
 app.get('/reviews/new', (req, res) => {
-  res.render('reviews-new', {});
+  res.render('reviews-new', { title: 'New Review' });
 });
 
 // CREATE
@@ -88,7 +92,20 @@ app.post('/reviews', (req, res) => {
     });
 });
 
-// let reviews = [
-//   { title: 'Bats are cute.', movieTitle: 'Batman II' },
-//   { title: 'Ice is overrated.', movieTitle: 'Titanic' },
-// ];
+// EDIT
+app.get('/reviews/:id/edit', (req, res) => {
+  Review.findById(req.params.id, function (err, review) {
+    res.render('reviews-edit', { review: review, title: 'Edit Review' });
+  });
+});
+
+// UPDATE
+app.put('/reviews/:id', (req, res) => {
+  Review.findByIdAndUpdate(req.params.id, req.body)
+    .then((review) => {
+      res.redirect(`/reviews/${review._id}`);
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+});
