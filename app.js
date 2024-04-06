@@ -1,23 +1,41 @@
+// Module Imports
 const express = require('express');
-const app = express();
+const methodOverride = require('method-override');
 const { engine } = require('express-handlebars');
+const Handlebars = require('handlebars');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const allowPrototypeAccess =
+  require('@handlebars/allow-prototype-access').allowInsecurePrototypeAccess;
 
+// App and Middleware Configuration
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+// override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'));
+
+// Database Connection
+mongoose
+  .connect('mongodb://localhost/movie-reviews')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Could not connect to MongoDB...', err));
+
+// View Engine Configuration
 app.engine(
   'handlebars',
-  engine({ extname: '.handlebars', defaultLayout: 'main' }),
+  engine({
+    extname: '.handlebars',
+    defaultLayout: 'main',
+    handlebars: allowPrototypeAccess(Handlebars),
+  }),
 );
 app.set('view engine', 'handlebars');
 
+// Routes
+const reviews = require('./controllers/reviews');
+reviews(app);
+
+// Start the Server
 app.listen(3000, () => {
   console.log('App listening on port 3000!');
 });
-
-// INDEX
-app.get('/', (req, res) => {
-  res.render('reviews-index', { reviews: reviews });
-});
-
-let reviews = [
-  { title: 'Bats are cute.', movieTitle: 'Batman II' },
-  { title: 'Ice is overrated.', movieTitle: 'Titanic' },
-];
