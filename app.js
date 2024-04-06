@@ -94,10 +94,21 @@ app.post('/reviews', (req, res) => {
 
 // EDIT
 app.get('/reviews/:id/edit', (req, res) => {
-  Review.findById(req.params.id, function (err, review) {
-    res.render('reviews-edit', { review: review, title: 'Edit Review' });
-  });
+  Review.findById(req.params.id)
+    .then((review) => {
+      res.render('reviews-edit', { review: review, title: 'Edit Review' });
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
 });
+
+// // EDIT
+// app.get('/reviews/:id/edit', (req, res) => {
+//   Review.findById(req.params.id, function (err, review) {
+//     res.render('reviews-edit', { review: review, title: 'Edit Review' });
+//   });
+// });
 
 // UPDATE
 app.put('/reviews/:id', (req, res) => {
