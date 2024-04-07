@@ -6,19 +6,33 @@ const Review = require('../models/review');
 
 chai.use(chaiHttp);
 
-const sampleReview = {
-  title: 'Super Sweet Review',
-  'movie-title': 'La La Land',
-  description: 'A great review of a lovely movie.',
-};
-
 // tell mocha you want to test Reviews (this string is taco)
 describe('Reviews', () => {
-  after(() => {
-    Review.deleteMany({ title: 'Super Sweet Review' }).exec((err, reviews) => {
-      console.log(reviews);
-      reviews.remove();
-    });
+  let createdReview;
+
+  // Create a review object before each test
+  beforeEach((done) => {
+    Review.create({
+      title: 'Super Sweet Review',
+      'movie-title': 'La La Land',
+      description: 'A great review of a lovely movie.',
+    })
+      .then((review) => {
+        createdReview = review;
+        done();
+      })
+      .catch((err) => done(err));
+  });
+
+  // Delete the created review after each test
+  afterEach((done) => {
+    if (createdReview) {
+      Review.deleteOne({ _id: createdReview._id })
+        .then(() => done())
+        .catch((err) => done(err));
+    } else {
+      done();
+    }
   });
 
   // make taco name for the test
@@ -53,32 +67,25 @@ describe('Reviews', () => {
 
   // TEST SHOW
   it('should show a SINGLE review on /reviews/<id> GET', (done) => {
-    var review = new Review(sampleReview);
-    review.save((err, data) => {
-      chai
-        .request(server)
-        .get(`/reviews/${data._id}`)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.html;
-          done();
-        });
-    });
+    chai
+      .request(server)
+      .get(`/reviews/${createdReview._id}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.be.html;
+        done();
+      });
   });
 
-  // TEST EDIT
   it('should edit a SINGLE review on /reviews/<id>/edit GET', (done) => {
-    var review = new Review(sampleReview);
-    review.save((err, data) => {
-      chai
-        .request(server)
-        .get(`/reviews/${data._id}/edit`)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.html;
-          done();
-        });
-    });
+    chai
+      .request(server)
+      .get(`/reviews/${createdReview._id}/edit`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.be.html;
+        done();
+      });
   });
 
   // TEST CREATE
@@ -86,7 +93,7 @@ describe('Reviews', () => {
     chai
       .request(server)
       .post('/reviews')
-      .send(sampleReview)
+      .send(createdReview)
       .end((err, res) => {
         res.should.have.status(200);
         res.should.be.html;
@@ -96,32 +103,26 @@ describe('Reviews', () => {
 
   // TEST UPDATE
   it('should update a SINGLE review on /reviews/<id> PUT', (done) => {
-    var review = new Review(sampleReview);
-    review.save((err, data) => {
-      chai
-        .request(server)
-        .put(`/reviews/${data._id}?_method=PUT`)
-        .send({ title: 'Updating the title' })
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.html;
-          done();
-        });
-    });
+    chai
+      .request(server)
+      .put(`/reviews/${createdReview._id}?_method=PUT`)
+      .send({ title: 'Updating the title' })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.be.html;
+        done();
+      });
   });
 
   // TEST DELETE
   it('should delete a SINGLE review on /reviews/<id> DELETE', (done) => {
-    var review = new Review(sampleReview);
-    review.save((err, data) => {
-      chai
-        .request(server)
-        .delete(`/reviews/${data._id}?_method=DELETE`)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.html;
-          done();
-        });
-    });
+    chai
+      .request(server)
+      .delete(`/reviews/${createdReview._id}?_method=DELETE`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.should.be.html;
+        done();
+      });
   });
 });

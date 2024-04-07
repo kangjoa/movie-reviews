@@ -18,7 +18,9 @@ app.use(methodOverride('_method'));
 
 // Database Connection
 mongoose
-  .connect(process.env.DB_CONNECTION_STRING)
+  .connect(
+    process.env.DB_CONNECTION_STRING || 'mongodb://localhost/movie-reviews',
+  )
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Could not connect to MongoDB...', err));
 
