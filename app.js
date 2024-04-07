@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 // Module Imports
 const express = require('express');
 const methodOverride = require('method-override');
@@ -16,7 +18,7 @@ app.use(methodOverride('_method'));
 
 // Database Connection
 mongoose
-  .connect('mongodb://localhost/movie-reviews')
+  .connect(process.env.DB_CONNECTION_STRING)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('Could not connect to MongoDB...', err));
 
