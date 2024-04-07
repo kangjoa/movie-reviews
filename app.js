@@ -34,6 +34,8 @@ app.set('view engine', 'handlebars');
 // Routes
 const reviews = require('./controllers/reviews');
 reviews(app);
+const comments = require('./controllers/comments');
+comments(app);
 
 // Start the Server
 app.listen(3000, () => {
