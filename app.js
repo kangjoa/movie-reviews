@@ -11,12 +11,14 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const allowPrototypeAccess =
   require('@handlebars/allow-prototype-access').allowInsecurePrototypeAccess;
+const cookieParser = require('cookie-parser');
 
 // App and Middleware Configuration
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'));
+app.use(cookieParser());
 
 // Database Connection
 mongoose
@@ -42,6 +44,8 @@ const reviews = require('./controllers/reviews');
 reviews(app);
 const comments = require('./controllers/comments');
 comments(app);
+const auth = require('./controllers/auth.js');
+auth(app);
 
 // Start the Server
 app.listen(3000, () => {
