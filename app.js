@@ -42,6 +42,8 @@ const reviews = require('./controllers/reviews');
 reviews(app);
 const comments = require('./controllers/comments');
 comments(app);
+const auth = require('./controllers/auth.js');
+auth(app);
 
 // Start the Server
 app.listen(3000, () => {
