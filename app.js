@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // override with POST having ?_method=DELETE or ?_method=PUT
 app.use(methodOverride('_method'));
 app.use(cookieParser());
+app.use(express.json());
 
 // Database Connection
 mongoose
